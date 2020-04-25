@@ -160,7 +160,32 @@ packer build ./$BASE_OS.json
 
 ### Creating an OpenStack QCOW2 image 
 
-TODO
+This code creates an QCOW2 image for use with OpenStack/ KVM system.
+You need to have qemu-kvm installed on your machine.
+
+This code is tested with Packer v1.5.5 and qemu-kvm 2.0.0.
+
+The default SSH username/password of built image can be found in preseed/kickstart/... file.
+You should change it or use SSH key instead for security.
+
+```shell
+# Choose base OS for your image, eg:
+export BASE_OS=ubuntu1404
+export BUILD_NUMBER=01
+
+# Validate template to eliminate syntax errors:
+packer validate ./$BASE_OS.json
+
+# Inspect the template to look at template information if you want:
+packer inspect ./$BASE_OS.json
+
+# Build the image:
+packer build ./$BASE_OS.json
+
+```
+
+The output artifacts will be in `packer-qemu-kvm/output-<build_number>` directory.
+You should upload it to artifactory. Uploading to Glance needs work.
 
 ## 3. Code of Conduct
 
@@ -175,4 +200,4 @@ Packer is under MPL2 licence. See [licenses](licences)
 
 ## 5. TODO
 
-* N/A
+* Upload QCOW2 image for qemu builder to OpenStack Glance

@@ -1,0 +1,80 @@
+{
+    "variables":
+    {
+        "build_number"          : "{{env `BUILD_NUMBER`}}",
+            
+        "ssh_username"          : "ubuntu",
+        "ssh_password"          : "secret",
+        "ssh_timeout"           : "30m"
+    },
+    
+    "builders": [
+        {
+            "type"              : "qemu",
+
+            "vm_name"           : "packer-ubuntu1404-{{user `build_number`}}.qcow2",
+            "format"            : "qcow2",
+            "accelerator"       : "kvm",
+            "headless"          : true,
+            
+            "cpus"              : 1,
+            "memory"            : 1024,
+            "disk_size"         : "10G",
+            "net_device"        : "virtio-net",
+            "disk_interface"    : "virtio",
+            "boot_wait"         : "10s",
+
+            "ssh_username"      : "{{user `ssh_username`}}",
+            "ssh_password"      : "{{user `ssh_password`}}",
+            "ssh_timeout"       : "{{user `ssh_timeout`}}",
+
+            "iso_urls": [
+                "http://old-releases.ubuntu.com/releases/14.04.5/ubuntu-14.04.5-server-amd64.iso"
+            ],
+            "iso_checksum_type" : "sha256",
+            "iso_checksum"      : "dde07d37647a1d2d9247e33f14e91acb10445a97578384896b4e1d985f754cc1",         
+            
+            "floppy_files": [
+                "./preseed.cfg"
+            ],
+            "boot_command": [
+                "<esc><esc><enter><wait>",
+                "/install/vmlinuz noapic ",
+                "preseed/file=/floppy/preseed.cfg ",
+                "debian-installer=en_US auto locale=en_US kbd-chooser/method=us ",
+                "hostname={{ .Name }} ",
+                "fb=false debconf/frontend=noninteractive ",
+                "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA keyboard-configuration/variant=USA console-setup/ask_detect=false ",
+                "initrd=/install/initrd.gz -- <enter>"
+            ],
+
+            "shutdown_command"  : "echo '{{user `ssh_password`}}' | sudo -S shutdown -P now",
+            "output_directory"  : "output-{{user `build_number`}}"
+        }
+    ],
+
+    "provisioners": [
+        {
+            "type": "shell",
+            "execute_command": "echo '{{user `ssh_password`}}' | sudo -S bash {{.Path}}",
+            "inline": [
+                "echo 'Hello, world'"
+            ]
+        },
+        {
+            "type": "file",
+            "source": "../files/index.html",
+            "destination": "/home/ubuntu/index.html"
+        }
+    ],
+
+    "post-processors": [
+        {
+            "type": "shell-local",
+            "inline": [
+                "echo 'Need work: upload to Glance'"
+            ]
+        }
+    ]
+}
+  
