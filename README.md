@@ -42,7 +42,22 @@ Code structure:
 
 ### Creating a VirtualBox OVA
 
-TODO
+You need to have VirtualBox installed on your machine.
+
+The default SSH username/password of built image can be found in preseed/kickstart/... file.
+You should change it or use SSH key instead for security.
+
+```shell
+# Choose base OS for your image, eg:
+BASE_OS=ubuntu1404
+
+# Validate template to eliminate syntax errors:
+packer validate ./$BASE_OS.json
+
+# Build the image:
+packer build ./$BASE_OS.json
+
+```
 
 ### Creating a VMware vSphere template
 
