@@ -42,7 +42,35 @@ Code structure:
 
 ### Creating a VirtualBox OVA
 
-TODO
+This code creates an OVA file and optionally a Vagrant box for Virtualbox.
+You need to have VirtualBox (and Vagrant if needed) installed on your machine.
+
+This code is tested with Packer v1.5.5, VirtualBox 4.3.40.
+
+The default SSH username/password of built image can be found in preseed/kickstart/... file.
+You should change it or use SSH key instead for security.
+
+```shell
+# Choose base OS for your image, eg:
+export BASE_OS=ubuntu1404
+export BUILD_NUMBER=01
+
+# Validate template to eliminate syntax errors:
+packer validate ./$BASE_OS.json
+
+# Inspect the template to look at template information if you want:
+packer inspect ./$BASE_OS.json
+
+# Build the image (along with Vagrant box):
+packer build ./$BASE_OS.json
+
+# If you don't need Vagrant box:
+packer build -except=vagrant-box ./$BASE_OS.json
+
+```
+
+The output artifacts will be in `packer-virtualbox-iso/output-<build_number>` directory.
+You should upload it to artifactory.
 
 ### Creating a VMware vSphere template
 
@@ -53,7 +81,8 @@ You should change it or use SSH key instead for security.
 
 ```shell
 # Choose base OS for your image, eg:
-BASE_OS=ubuntu1404
+export BASE_OS=ubuntu1404
+export BUILD_NUMBER=01
 
 # Input VMware vSphere information:
 cd packer-vsphere-iso
@@ -68,6 +97,9 @@ sed -i "s/SED_VSPHERE_NETWORK/Network1/" ./$BASE_OS.json
 
 # Validate template to eliminate syntax errors:
 packer validate ./$BASE_OS.json
+
+# Inspect the template to look at template information if you want:
+packer inspect ./$BASE_OS.json
 
 # Build the image:
 packer build ./$BASE_OS.json
@@ -95,5 +127,4 @@ Packer is under MPL2 licence. See [licenses](licences)
 
 ## 5. TODO
 
-* Add VMX data to vsphere-iso builder (eg. enable nested virtualization)
 * N/A
