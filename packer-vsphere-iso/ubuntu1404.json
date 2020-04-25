@@ -1,0 +1,91 @@
+{
+    "variables": 
+    {
+        "build_number"      : "{{env `BUILD_NUMBER`}}",
+            
+        "ssh_username"      : "ubuntu",
+        "ssh_password"      : "secret",
+        "ssh_timeout"       : "30m",
+            
+        "vsphere_vcenter"   : "SED_VSPHERE_VCENTER",
+        "vsphere_host"      : "SED_VSPHERE_HOST",
+        "vsphere_datacenter": "SED_VSPHERE_DATACENTER",
+        "vsphere_cluster"   : "SED_VSPHERE_CLUSTER",
+        "vsphere_datastore" : "SED_VSPHERE_DATASTORE",
+        "vsphere_username"  : "SED_VSPHERE_USERNAME",
+        "vsphere_password"  : "SED_VSPHERE_PASSWORD",
+        "vsphere_network"   : "SED_VSPHERE_NETWORK"
+    },
+
+    "builders": [
+        {
+            "type"          : "vsphere-iso",
+
+            "vcenter_server": "{{user `vsphere_vcenter`}}",
+            "host"          : "{{user `vsphere_host`}}",
+            "username"      : "{{user `vsphere_username`}}",
+            "password"      : "{{user `vsphere_password`}}",
+            "datacenter"    : "{{user `vsphere_datacenter`}}",
+            "cluster"       : "{{user `vsphere_cluster`}}",
+            "datastore"     : "{{user `vsphere_datastore`}}",
+            "insecure_connection": true,
+
+            "vm_name"       : "packer-demo-{{user `build_number`}}",
+            "guest_os_type" : "ubuntu64Guest",
+            "folder"        : "/templates",
+            "convert_to_template": true,
+
+            "ssh_username"  : "{{user `ssh_username`}}",
+            "ssh_password"  : "{{user `ssh_password`}}",
+            "ssh_timeout"   : "{{user `ssh_timeout`}}",
+
+            "CPUs"          : 1,
+            "RAM"           : 1024,
+            "disk_size"     : 10240,
+            "network"       : "{{user `vsphere_network`}}",
+            "network_card"  : "vmxnet3",
+            "disk_thin_provisioned": true,
+            
+            "iso_paths": [
+                "[{{user `vsphere_datastore`}}] iso/ubuntu-14.04.6-server-amd64.iso"
+            ],
+            "floppy_files": [
+                "./preseed.cfg"
+            ],
+            "boot_command": [
+                "<enter><wait><f6><wait><esc><wait>",
+                "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+                "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+                "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+                "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+                "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+                "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+                "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+                "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+                "<bs><bs><bs>",
+                "/install/vmlinuz",
+                " initrd=/install/initrd.gz",
+                " priority=critical",
+                " locale=en_US",
+                " preseed/file=/floppy/preseed.cfg",
+                "<enter>"
+            ]
+        }
+    ],
+
+    "provisioners": [
+        {
+            "type": "shell",
+            "execute_command": "echo '{{user `ssh_password`}}' | sudo -S bash {{.Path}}",
+            "inline": [
+                "echo 'Hello, world'"
+            ]
+        },
+        {
+            "type": "file",
+            "source": "../files/index.html",
+            "destination": "/home/ubuntu/index.html"
+        }
+    ]
+}
+  
