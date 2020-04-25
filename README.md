@@ -108,7 +108,55 @@ packer build ./$BASE_OS.json
 
 ### Creating an Amazon AMI
 
-TODO
+This code creates an AMI backed by an EBS snapshot on your AWS account.
+
+This code is tested with Packer v1.5.5.
+
+You should have AWS account first, and have Access key and Secret key properly configured.
+You can do this by either:
+* Use environment variables:
+```shell
+export AWS_ACCESS_KEY_ID="anaccesskey"
+export AWS_SECRET_ACCESS_KEY="asecretkey"
+```
+
+* Use AWS profile:
+```shell
+mkdir -p $HOME/.aws
+cat >> $HOME/.aws/credentials <<EOF
+[default]
+aws_access_key_id=anaccesskey
+aws_secret_access_key=asecretkey
+EOF
+```
+
+The default region is `us-east-1`. The subnet and security group used for Packer must have these tags:
+```
+"namespace" : "devops",
+"project"   : "demo",
+"ispublic"  : "true"
+```
+
+The default SSH username/password of built image can be found in preseed/kickstart/... file.
+You should change it or use SSH key instead for security.
+
+```shell
+# Choose base OS for your image, eg:
+export BASE_OS=ubuntu1404
+export BUILD_NUMBER=01
+
+cd packer-amazon-ebs
+
+# Validate template to eliminate syntax errors:
+packer validate ./$BASE_OS.json
+
+# Inspect the template to look at template information if you want:
+packer inspect ./$BASE_OS.json
+
+# Build the image:
+packer build ./$BASE_OS.json
+
+```
 
 ### Creating an OpenStack QCOW2 image 
 

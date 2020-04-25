@@ -1,0 +1,7 @@
+#cloud-config
+- name: ubuntu
+    gecos: Ubuntu
+    home: /home/ubuntu
+    shell: /bin/bash
+    lock_passwd: false
+    plain_text_passwd: 'secret'

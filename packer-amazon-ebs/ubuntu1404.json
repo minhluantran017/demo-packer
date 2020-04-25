@@ -1,0 +1,92 @@
+{
+    "variables":
+    {
+        "build_number"      : "{{env `BUILD_NUMBER`}}",
+            
+        "ssh_username"      : "ubuntu",
+        "ssh_password"      : "secret",
+        "ssh_timeout"       : "30m",
+
+        "aws_region"        : "us-east-1"
+    },
+
+    "builders": [
+        {
+            "type"          : "amazon-ebs",
+
+            "region"        : "{{user `aws_region`}}",
+
+            "ami_name"      : "packer-ubuntu1404-{{user `build_number`}}",
+            "instance_type" : "t2.micro",
+            "source_ami_filter": {
+                "filters": {
+                    "virtualization-type"   : "hvm",
+                    "name"                  : "*ubuntu-trusty-14.04-amd64-server-*",
+                    "root-device-type"      : "ebs"
+                },
+                "owners"        : ["099720109477"],
+                "most_recent"   : true
+            },
+            "subnet_filter": {
+                "filters": {
+                    "tag:namespace" : "devops",
+                    "tag:project"   : "demo",
+                    "tag:ispublic"  : "true"
+                },
+                "most_free"     : true,
+                "random"        : false
+            },
+            "security_group_filter": {
+                "filters": {
+                    "tag:namespace" : "devops",
+                    "tag:project"   : "demo",
+                    "tag:ispublic"  : "true"
+                }
+            },
+            "ssh_username"      : "{{user `ssh_username`}}",
+            "ssh_timeout"       : "{{user `ssh_timeout`}}",
+            "user_data_file"    : "ubuntu_user_data",
+            "launch_block_device_mappings": [
+                {
+                    "device_name": "/dev/sda1",
+                    "volume_size": "10",
+                    "volume_type": "gp2",
+                    "delete_on_termination": true
+                }
+            ],
+            "run_tags": {
+                "Name"      : "packer-ubuntu1404-{{user `build_number`}}",
+                "namespace" : "devops",
+                "project"   : "demo"
+            },
+            "tags": {
+                "Name"      : "packer-ubuntu1404-{{user `build_number`}}",
+                "namespace" : "devops",
+                "project"   : "demo"
+            }
+        }
+    ],
+
+    "provisioners": [
+        {
+            "type": "shell",
+            "inline": [
+                "echo 'Hello, world'"
+            ]
+        },
+        {
+            "type": "file",
+            "source": "../files/index.html",
+            "destination": "/home/ubuntu/index.html"
+        }
+    ],
+
+    "post-processors": [
+        {
+            "type": "shell-local",
+            "inline": [
+                "echo foo"
+            ]
+        }
+    ]
+}
