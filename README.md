@@ -24,7 +24,7 @@ Code structure:
 ```
 .
 |____packer-<builder>       \\ Contains JSON templates specific for each builder (vsphere-iso, amazon-ebs,...)
-|    |____ubuntu14.04.json  
+|    |____ubuntu1404.json  
 |    |____centos7.json    
 |____scripts                \\ Contains shell/python/powershell scripts
 |    |____*.sh
@@ -44,7 +44,33 @@ TODO
 
 ### Creating a VMware vSphere template
 
-TODO
+This code is tested with Packer v1.5.5, ESXi/vCenter v6.5.
+
+The default SSH username/password of built image can be found in preseed/kickstart/... file.
+You should change it or use SSH key instead for security.
+
+```shell
+# Choose base OS for your image, eg:
+BASE_OS=ubuntu1404
+
+# Input VMware vSphere information:
+cd packer-vsphere-iso
+sed -i "s/SED_VSPHERE_VCENTER/vcenter.example.com/" ./$BASE_OS.json
+sed -i "s/SED_VSPHERE_HOST/esxi-1.example.com/" ./$BASE_OS.json
+sed -i "s/SED_VSPHERE_USERNAME/user/" ./$BASE_OS.json
+sed -i "s/SED_VSPHERE_PASSWORD/password/" ./$BASE_OS.json
+sed -i "s/SED_VSPHERE_DATACENTER/datacenter1/" ./$BASE_OS.json
+sed -i "s/SED_VSPHERE_CLUSTER/cluster1/" ./$BASE_OS.json
+sed -i "s/SED_VSPHERE_DATASTORE/datastore1/" ./$BASE_OS.json
+sed -i "s/SED_VSPHERE_NETWORK/Network1/" ./$BASE_OS.json
+
+# Validate template to eliminate syntax errors:
+packer validate ./$BASE_OS.json
+
+# Build the image:
+packer build ./$BASE_OS.json
+
+```
 
 ### Creating an Amazon AMI
 
@@ -67,4 +93,5 @@ Packer is under MPL2 licence. See [licenses](licences)
 
 ## 5. TODO
 
+* Add VMX data to vsphere-iso builder (eg. enable nested virtualization)
 * N/A
