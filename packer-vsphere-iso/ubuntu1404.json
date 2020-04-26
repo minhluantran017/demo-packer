@@ -30,7 +30,7 @@
             "datastore"     : "{{user `vsphere_datastore`}}",
             "insecure_connection": true,
 
-            "vm_name"       : "packer-demo-{{user `build_number`}}",
+            "vm_name"       : "packer-ubuntu1404-{{user `build_number`}}",
             "guest_os_type" : "ubuntu64Guest",
             "folder"        : "/templates",
             "convert_to_template": true,
@@ -69,7 +69,11 @@
                 " locale=en_US",
                 " preseed/file=/floppy/preseed.cfg",
                 "<enter>"
-            ]
+            ],
+            "export": {
+                "force": true,
+                "output_directory": "./output-{{user `build_number`}}"
+            }
         }
     ],
 
@@ -85,6 +89,21 @@
             "type": "file",
             "source": "../files/index.html",
             "destination": "/home/ubuntu/index.html"
+        }
+    ],
+
+    "post-processors": [
+        {
+            "type": "vagrant",
+            "name": "vagrant-box",
+            "output": "output-{{user `build_number`}}/packer-ubuntu1404-{{user `build_number`}}.box",
+            "keep_input_artifact" : true
+        },
+        {
+            "type": "shell-local",
+            "inline": [
+                "echo 'You should upload artifacts to somewhere'"
+            ]
         }
     ]
 }

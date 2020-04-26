@@ -46,6 +46,9 @@ TODO
 
 ### Creating a VMware vSphere template
 
+This code creates a vSphere template on the remote vSphere system, an OVF file locally, and optionally a Vagrant box for VMware.
+You need to have Vagrant installed on your machine if needed.
+
 This code is tested with Packer v1.5.5, ESXi/vCenter v6.5.
 
 The default SSH username/password of built image can be found in preseed/kickstart/... file.
@@ -53,7 +56,8 @@ You should change it or use SSH key instead for security.
 
 ```shell
 # Choose base OS for your image, eg:
-BASE_OS=ubuntu1404
+export BASE_OS=ubuntu1404
+export BUILD_NUMBER=01
 
 # Input VMware vSphere information:
 cd packer-vsphere-iso
@@ -69,10 +73,18 @@ sed -i "s/SED_VSPHERE_NETWORK/Network1/" ./$BASE_OS.json
 # Validate template to eliminate syntax errors:
 packer validate ./$BASE_OS.json
 
-# Build the image:
+# Inspect the template to look at template information if you want:
+packer inspect ./$BASE_OS.json
+
+# Build the image (along with Vagrant box):
 packer build ./$BASE_OS.json
 
+# If you don't need Vagrant box:
+packer build -except=vagrant-box ./$BASE_OS.json
+
 ```
+
+The output artifact will be in `packer-vsphere-iso/output-<build_number>` directory. You should upload it to artifactory.
 
 ### Creating an Amazon AMI
 
