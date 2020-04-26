@@ -12,7 +12,7 @@
         {
             "type"          : "virtualbox-iso",
 
-            "vm_name"       : "packer-demo-{{user `build_number`}}",
+            "vm_name"       : "packer-ubuntu1404-{{user `build_number`}}",
             "format"        : "ova",
             "headless"      : true,
             "guest_os_type" : "Ubuntu_64",
@@ -55,7 +55,7 @@
                 "--vsys", "0",
                 "--manifest"
             ],
-            "output_directory"      : "output"
+            "output_directory"      : "output-{{user `build_number`}}"
         }
     ],
 
@@ -78,7 +78,7 @@
         {
             "type": "vagrant",
             "name": "vagrant-box",
-            "output": "output/ubuntu1404-{{.Provider}}.box",
+            "output": "output-{{user `build_number`}}/packer-ubuntu1404-{{user `build_number`}}.box",
             "keep_input_artifact" : true
         },
         {
