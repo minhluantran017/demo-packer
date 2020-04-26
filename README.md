@@ -1,6 +1,8 @@
 # Demo Packer
 A demo Packer usage and templates.
 
+![](https://github.com/minhluantran017/demo-packer/workflows/Validate%20templates/badge.svg)
+
 ## 1. Installation
 
 ```shell

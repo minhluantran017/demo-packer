@@ -1,0 +1,33 @@
+name: Validate templates
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Install Packer
+        run: |
+          sudo apt-get install unzip -y
+          # Download and install Packer.
+          PACKER_VER=`curl -sS https://releases.hashicorp.com/packer/ | grep href | head -2 | tail -1 | awk -F/ '{print $3}'`
+          curl -o packer.zip https://releases.hashicorp.com/packer/${PACKER_VER}/packer_${PACKER_VER}_linux_amd64.zip
+          unzip packer.zip
+          sudo mv packer /usr/local/bin/packer
+          # Ensure Packer is installed correctly.
+          packer --version
+      - name: Validate templates
+        run: |
+          find . -name "*.json" | while read filename
+          do
+            echo "$filename"; packer validate -syntax-only "$filename"
+          done
