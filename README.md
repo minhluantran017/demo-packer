@@ -42,22 +42,33 @@ Code structure:
 
 ### Creating a VirtualBox OVA
 
-You need to have VirtualBox installed on your machine.
+This template creates an OVA file and optionally a Vagrant box for Virtualbox.
+You need to have VirtualBox (and Vagrant if needed) installed on your machine.
 
 The default SSH username/password of built image can be found in preseed/kickstart/... file.
 You should change it or use SSH key instead for security.
 
 ```shell
 # Choose base OS for your image, eg:
-BASE_OS=ubuntu1404
+export BASE_OS=ubuntu1404
+export BUILD_NUMBER=01
 
 # Validate template to eliminate syntax errors:
 packer validate ./$BASE_OS.json
 
-# Build the image:
+# Inspect the template to look at template information if you want:
+packer inspect ./$BASE_OS.json
+
+# Build the image (along with Vagrant box):
 packer build ./$BASE_OS.json
 
+# If you don't need Vagrant box:
+packer build -except=vagrant-box ./$BASE_OS.json
+
 ```
+
+The output artifact will be in `packer-vsphere-iso/output` directory.
+You should upload it to artifactory.
 
 ### Creating a VMware vSphere template
 
