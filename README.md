@@ -1,6 +1,7 @@
 # Demo Packer
 A demo Packer usage and templates.
 
+![](https://img.shields.io/static/v1?label=Packer%20version&message=v1.6.0&color=blue)
 ![](https://github.com/minhluantran017/demo-packer/workflows/Validate%20templates/badge.svg)
 
 ## 1. Installation
@@ -25,18 +26,16 @@ cd demo-packer
 Code structure:
 ```
 .
-|____packer-<builder>       \\ Contains JSON templates specific for each builder (vsphere-iso, amazon-ebs,...)
-|    |____ubuntu1404.json  
-|    |____centos7.json    
-|____scripts                \\ Contains shell/python/powershell scripts
+|____packer-<builder>       // Contains templates specific for each builder (vsphere-iso, amazon-ebs,...)
+|    |____*.json                // JSON templates (old format)
+|    |____*.pkr.hcl             // HCL2 templates (new format)
+|____scripts                // Contains Bash/Python/PowerShell scripts
 |    |____*.sh
 |    |____*.py
-|____files                  \\ Contains other files 
+|    |____*.ps1
+|____files                  // Contains other files 
 |    |____*.txt
 |    |____*.cfg
-|____licences               \\ Contains licenses
-|    |____*.lic
-|____Jenkinsfile            \\ Jenkinsfile for CI/CD
 |____README.md
 ```
 
@@ -45,12 +44,12 @@ Code structure:
 This code creates an OVA file and optionally a Vagrant box for Virtualbox.
 You need to have VirtualBox (and Vagrant if needed) installed on your machine.
 
-This code is tested with Packer v1.5.5, VirtualBox 4.3.40.
-
 The default SSH username/password of built image can be found in preseed/kickstart/... file.
 You should change it or use SSH key instead for security.
 
-```shell
+This code was tested with Packer v1.6.0 (except Vagrant post-processor in HCL).
+
+```sh
 # Choose base OS for your image, eg:
 export BASE_OS=ubuntu1404
 export BUILD_NUMBER=01
@@ -69,7 +68,7 @@ packer build -except=vagrant-box ./$BASE_OS.json
 
 ```
 
-The output artifacts will be in `packer-virtualbox-iso/output-<build_number>` directory.
+The output artifact will be in `packer-virtualbox-iso/output-<build_number>` directory.
 You should upload it to artifactory.
 
 ### Creating a VMware vSphere template
@@ -79,7 +78,7 @@ This code is tested with Packer v1.5.5, ESXi/vCenter v6.5.
 The default SSH username/password of built image can be found in preseed/kickstart/... file.
 You should change it or use SSH key instead for security.
 
-```shell
+```sh
 # Choose base OS for your image, eg:
 export BASE_OS=ubuntu1404
 export BUILD_NUMBER=01
@@ -162,16 +161,16 @@ packer build ./$BASE_OS.json
 
 TODO
 
-## 3. Code of Conduct
+## 3. HCL2 configuration
+
+All Packer HCL2 templates in this repo need Packer v1.6.0 and later to run.
+
+## 4. Code of Conduct
 
 - Create branch for each component from `master` with convention: `dev_<component>`.
 For example: `dev_vsphere-iso`.
 
 - Please always create Pull Request to merge it to `master`. Only merge if all the tests pass.
-
-## 4. Licenses
-
-Packer is under MPL2 licence. See [licenses](licences)
 
 ## 5. TODO
 

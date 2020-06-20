@@ -2,10 +2,9 @@
     "variables":
     {
         "build_number"      : "{{env `BUILD_NUMBER`}}",
-        
-        "ssh_username"      : "ubuntu",
-        "ssh_password"      : "secret",
-        "ssh_timeout"       : "30m"
+        "cpus"              : "1",
+        "memory"            : "1024",
+        "disk_size"         : "10240"
     },
 
     "builders": [
@@ -20,19 +19,18 @@
             "guest_additions_mode": "disable",
             "virtualbox_version_file": "",
 
-            "ssh_username"  : "{{user `ssh_username`}}",
-            "ssh_password"  : "{{user `ssh_password`}}",
-            "ssh_timeout"   : "{{user `ssh_timeout`}}",
+            "ssh_username"  : "ubuntu",
+            "ssh_password"  : "secret",
+            "ssh_timeout"   : "30m",
             
-            "cpus"          :1,
-            "memory"        : 1024,
-            "disk_size"     : 10240,
+            "cpus"          : "{{user `cpus`}}",
+            "memory"        : "{{user `memory`}}",
+            "disk_size"     : "{{user `disk_size`}}",
 
             "iso_urls": [
                 "http://old-releases.ubuntu.com/releases/14.04.5/ubuntu-14.04.5-server-amd64.iso"
             ],
-            "iso_checksum_type" : "sha256",
-            "iso_checksum"      : "dde07d37647a1d2d9247e33f14e91acb10445a97578384896b4e1d985f754cc1",
+            "iso_checksum"      : "md5:dd54dc8cfc2a655053d19813c2f9aa9f",
             "floppy_files": [
                 "./preseed.cfg"
             ],
@@ -48,7 +46,7 @@
                 "initrd=/install/initrd.gz -- <enter>"
             ],
 
-            "shutdown_command"      : "echo '{{user `ssh_password`}}' | sudo -S shutdown -P now",
+            "shutdown_command"      : "echo secret | sudo -S shutdown -P now",
             "post_shutdown_delay"   : "2m",
             "skip_export"           : false,
             "export_opts": [
@@ -62,7 +60,7 @@
     "provisioners": [
         {
             "type": "shell",
-            "execute_command": "echo '{{user `ssh_password`}}' | sudo -S bash {{.Path}}",
+            "execute_command": "echo secret | sudo -S bash {{.Path}}",
             "inline": [
                 "echo 'Hello, world'"
             ]
