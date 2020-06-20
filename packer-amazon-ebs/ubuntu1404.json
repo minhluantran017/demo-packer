@@ -2,12 +2,7 @@
     "variables":
     {
         "build_number"      : "{{env `BUILD_NUMBER`}}",
-            
-        "ssh_username"      : "ubuntu",
-        "ssh_password"      : "secret",
-        "ssh_timeout"       : "30m",
-
-        "aws_region"        : "us-east-1"
+        "aws_region"        : "us-west-1"
     },
 
     "builders": [
@@ -41,8 +36,8 @@
                     "tag:ispublic"  : "true"
                 }
             },
-            "ssh_username"      : "{{user `ssh_username`}}",
-            "ssh_timeout"       : "{{user `ssh_timeout`}}",
+            "ssh_username"      : "ubuntu",
+            "ssh_timeout"       : "30m",
             "user_data_file"    : "ubuntu_user_data",
             "launch_block_device_mappings": [
                 {
