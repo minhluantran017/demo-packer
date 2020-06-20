@@ -149,9 +149,6 @@ cd packer-amazon-ebs
 # Validate template to eliminate syntax errors:
 packer validate ./$BASE_OS.json
 
-# Inspect the template to look at template information if you want:
-packer inspect ./$BASE_OS.json
-
 # Build the image:
 packer build ./$BASE_OS.json
 
